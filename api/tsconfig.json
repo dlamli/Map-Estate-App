@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "baseUrl": "src",
+    "outDir": "dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+    "declaration": true
+  },
+  "include": [
+    "src/**/*",
+    "lib",
+    "controllers",
+    "generated",
+    "routes",
+    "app.ts"
+  ]
+}
