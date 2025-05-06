@@ -12,7 +12,7 @@ function Navbar() {
       <div className="left">
         <Link to="/" className="logo">
           <img src="/logo.png" alt="" />
-          <span>LamaEstate</span>
+          <span>MapEstate</span>
         </Link>
         <Link to="/">Home</Link>
         <Link to="/">About</Link>
@@ -22,8 +22,8 @@ function Navbar() {
       <div className="right">
         {user ? (
           <div className="user">
-            <img src={user.avatar || "noavatar.jpg"} alt="" />
-            <span>{user.username}</span>
+            <img src={user?.avatar || "noavatar.jpg"} alt="" />
+            <span>{user?.username}</span>
             <Link to="/profile" className="profile">
               <div className="notification">3</div>
               <span>Profile</span>

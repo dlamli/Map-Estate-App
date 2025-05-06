@@ -7,11 +7,11 @@ export const AuthContextProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("user")) || null
   );
 
-  const updateUser = (user) => setCurrentUser(user);
-
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser]);
+
+  const updateUser = (user) => setCurrentUser(user);
 
   return (
     <AuthContext.Provider value={{ currentUser, updateUser }}>

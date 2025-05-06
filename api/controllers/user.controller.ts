@@ -44,15 +44,15 @@ export const updateUserById = async (req: Request, res: Response) => {
 
   if (id !== tokenUserId) return res.status(403).json({ message: "Unauthorized" });
 
-  try {
-    let updatedPassword = null;
+  let updatedPassword = null;
 
+  try {
     if (password) {
       const salt = 10;
       updatedPassword = await bcrypt.hash(password, salt);
     }
 
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         ...body,
@@ -61,7 +61,9 @@ export const updateUserById = async (req: Request, res: Response) => {
       }
     });
 
-    res.status(200).json(user);
+    const { password: userPassword, ...userWithoutPassword } = updatedUser;
+
+    res.status(200).json(userWithoutPassword);
   } catch (error) {
     console.log(error);
     res.status(500).json(

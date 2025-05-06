@@ -1,5 +1,4 @@
 import SearchBar from "../../components/searchBar/SearchBar";
-import { useAuthContext } from "../../hooks/useAuthContext";
 import "./homePage.scss";
 
 function HomePage() {
