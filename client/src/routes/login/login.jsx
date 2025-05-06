@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./login.scss";
 import { API_URL } from "../../services/api";
-import { Bounce, toast } from "react-toastify";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 function Login() {
   const {
@@ -14,16 +14,15 @@ function Login() {
   } = useForm();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const { updateUser } = useAuthContext();
 
   const onSubmit = async ({ username, password }) => {
     try {
-      const response = await API_URL.post("/auth/login", {
+      const res = await API_URL.post("/auth/login", {
         username,
         password,
       });
-
-      localStorage.setItem("user", JSON.stringify(response.data));
-
+      updateUser(res.data);
       navigate("/");
     } catch (error) {
       console.log(error);

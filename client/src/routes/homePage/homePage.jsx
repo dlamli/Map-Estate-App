@@ -1,7 +1,10 @@
 import SearchBar from "../../components/searchBar/SearchBar";
+import { useAuthContext } from "../../hooks/useAuthContext";
 import "./homePage.scss";
 
 function HomePage() {
+  // const ctx = useAuthContext();
+
   return (
     <div className="homePage">
       <div className="textContainer">
