@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
+import jwt from 'jsonwebtoken';
 
 import prisma from "../lib/prisma.ts";
-import { create } from "domain";
 
 export const getPost = async (req: Request, res: Response) => {
+  const { query } = req;
+
   try {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      where: {
+        city: query.city || undefined,
+        type: query.type || undefined,
+        property: query.property || undefined,
+        bathroom: Number(query.bathroom) || undefined,
+        bedroom: Number(query.bedroom) || undefined,
+        price: {
+          gte: Number(query.minPrice) || 0,
+          lte: Number(query.maxPrice) || 10000000,
+        }
+      }
+    });
+
     res.status(200).json(posts);
   } catch (error) {
     console.log(error);
@@ -19,7 +34,8 @@ export const getPostById = async (req: Request, res: Response) => {
 
   try {
     const post = await prisma.post.findUnique({
-      where: { id }, include: {
+      where: { id },
+      include: {
         postDetail: true,
         user: {
           select: {
@@ -30,7 +46,28 @@ export const getPostById = async (req: Request, res: Response) => {
       }
     });
 
-    res.status(200).json(post);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const token = req.cookies?.token;
+    let isSaved = false;
+
+    if (token) {
+      const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const saved = await prisma.savedPost.findUnique({
+        where: {
+          userId_postId: {
+            userId: payload.id,
+            postId: post.id
+          }
+        }
+      });
+
+      if (saved) {
+        isSaved = true;
+      }
+    }
+
+    return res.status(200).json({ ...post, isSaved });
   } catch (error) {
     console.log(error);
     res.status(500).json({

@@ -17,24 +17,72 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 }
 export const getUserById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id;
   try {
-    const user = await prisma.user.findUnique({ where: { id } });
-
-    if (!user) return res.status(404).json(
-      {
-        message: "User not found"
-      }
-    )
-
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
     res.status(200).json(user);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(
-      {
-        message: "Error getting user"
-      }
-    )
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to get user!" });
+  }
+}
+
+export const profilePosts = async (req: Request, res: Response) => {
+  const tokenUserId = req.userId;
+  try {
+    const userPosts = await prisma.post.findMany({
+      where: { userId: tokenUserId },
+    });
+    const saved = await prisma.savedPost.findMany({
+      where: { userId: tokenUserId },
+      include: {
+        post: true,
+      },
+    });
+
+    const savedPosts = saved.map((item) => item.post);
+    res.status(200).json({ userPosts, savedPosts });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to get profile posts" });
+  }
+}
+
+export const savePost = async (req: Request, res: Response) => {
+  const postId = req.body.postId;
+  const tokenUserId = req.userId;
+
+  try {
+    const savedPost = await prisma.savedPost.findUnique({
+      where: {
+        userId_postId: {
+          userId: tokenUserId,
+          postId,
+        },
+      },
+    });
+
+    if (savedPost) {
+      await prisma.savedPost.delete({
+        where: {
+          id: savedPost.id,
+        },
+      });
+      res.status(200).json({ message: "Post removed from saved list" });
+    } else {
+      await prisma.savedPost.create({
+        data: {
+          userId: tokenUserId,
+          postId,
+        },
+      });
+      res.status(200).json({ message: "Post saved" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to delete users!" });
   }
 }
 export const updateUserById = async (req: Request, res: Response) => {

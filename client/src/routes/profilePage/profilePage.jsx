@@ -1,14 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import { API_URL } from "../../services/api";
 import "./profilePage.scss";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import { Suspense } from "react";
 
 function ProfilePage() {
+  const data = useLoaderData();
   const { user, updateUser } = useAuthContext();
   const navigate = useNavigate();
-
+  
   const handleLogout = async () => {
     try {
       await API_URL.post("/auth/logout");
@@ -32,13 +34,13 @@ function ProfilePage() {
           <div className="info">
             <span>
               Avatar:
-              <img src={user.avatar || "noavatar.jpg"} alt="" />
+              <img src={user.userInfo.avatar || "noavatar.jpg"} alt="" />
             </span>
             <span>
-              Username: <b>{user.username}</b>
+              Username: <b>{user.userInfo.username}</b>
             </span>
             <span>
-              E-mail: <b>{user.email}</b>
+              E-mail: <b>{user.userInfo.email}</b>
             </span>
             {user && <button onClick={handleLogout}>Logout</button>}
           </div>
@@ -48,11 +50,25 @@ function ProfilePage() {
               <button>Create New Post</button>
             </Link>
           </div>
-          <List />
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={data.postResponse}
+              errorElement={<p>Error loading post</p>}
+            >
+              {(postResponse) => <List posts={postResponse.data.userPosts} />}
+            </Await>
+          </Suspense>
           <div className="title">
             <h1>Saved List</h1>
           </div>
-          <List />
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={data.postResponse}
+              errorElement={<p>Error loading post</p>}
+            >
+              {(postResponse) => <List posts={postResponse.data.savedPosts} />}
+            </Await>
+          </Suspense>
         </div>
       </div>
       <div className="chatContainer">

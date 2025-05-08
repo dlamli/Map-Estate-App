@@ -1,13 +1,15 @@
 import { Router } from "express";
-import { deleteUserById, getUserById, getUsers, updateUserById } from "../controllers/user.controller.ts";
+import { deleteUserById, getUserById, getUsers, profilePosts, savePost, updateUserById } from "../controllers/user.controller.ts";
 import { verifyToken } from "../middlewares/verify-token.ts";
 
 
 const router = Router();
 
 router.get("/", getUsers);
-router.get("/:id", verifyToken, getUserById);
+// router.get("/:id", verifyToken, getUserById);
+router.post("/save", verifyToken, savePost);
 router.put("/:id", verifyToken, updateUserById);
 router.delete("/:id", verifyToken, deleteUserById);
+router.get("/profilePosts", verifyToken, profilePosts);
 
 export default router;

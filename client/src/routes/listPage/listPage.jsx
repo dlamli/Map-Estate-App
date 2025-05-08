@@ -1,25 +1,50 @@
-import { listData } from "../../lib/dummydata";
-import "./listPage.scss";
-import Filter from "../../components/filter/Filter"
-import Card from "../../components/card/Card"
+import { Suspense } from "react";
+import { Await, useLoaderData } from "react-router-dom";
+
+import Filter from "../../components/filter/Filter";
+import Card from "../../components/card/Card";
 import Map from "../../components/map/Map";
 
-function ListPage() {
-  const data = listData;
+import "./listPage.scss";
 
-  return <div className="listPage">
-    <div className="listContainer">
-      <div className="wrapper">
-        <Filter/>
-        {data.map(item=>(
-          <Card key={item.id} item={item}/>
-        ))}
+function ListPage() {
+  const posts = useLoaderData();
+
+  const { postResponse } = posts;
+
+  return (
+    <div className="listPage">
+      <div className="listContainer">
+        <div className="wrapper">
+          <Filter />
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={postResponse}
+              errorElement={<p>Error loading post</p>}
+            >
+              {(postResponse) =>
+                postResponse.data.map((p) => <Card key={p.id} item={p} />)
+              }
+            </Await>
+          </Suspense>
+        </div>
+      </div>
+      <div className="mapContainer">
+        <Suspense fallback={<p>Loading...</p>}>
+          <Await
+            resolve={postResponse}
+            errorElement={<p>Error loading post</p>}
+          >
+            {(postResponse) =>
+              postResponse.data.map((p) => (
+                <Map key={p.id} items={postResponse.data} />
+              ))
+            }
+          </Await>
+        </Suspense>
       </div>
     </div>
-    <div className="mapContainer">
-      <Map items={data}/>
-    </div>
-  </div>;
+  );
 }
 
 export default ListPage;
