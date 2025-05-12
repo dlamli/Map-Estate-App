@@ -7,6 +7,8 @@ import postRoute from "./routes/post.route.ts";
 import authRoute from "./routes/auth.route.ts";
 import testRoute from "./routes/test.route.ts";
 import userRoute from "./routes/user.route.ts";
+import chatRoute from "./routes/chat.route.ts";
+import messageRoute from "./routes/message.route.ts";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -18,6 +20,8 @@ app.use(cookie())
 app.use("/api/posts", postRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
+app.use("/api/chats", chatRoute);
+app.use("/api/messages", messageRoute);
 app.use("/test", testRoute);
 
 app.listen(PORT, () => {

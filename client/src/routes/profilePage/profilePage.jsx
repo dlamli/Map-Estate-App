@@ -10,7 +10,7 @@ function ProfilePage() {
   const data = useLoaderData();
   const { user, updateUser } = useAuthContext();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     try {
       await API_URL.post("/auth/logout");
@@ -73,7 +73,14 @@ function ProfilePage() {
       </div>
       <div className="chatContainer">
         <div className="wrapper">
-          <Chat />
+          <Suspense fallback={<p>Loading chats...</p>}>
+            <Await
+              resolve={data.chatResponse}
+              errorElemen={<p>Error loading chats</p>}
+            >
+              {(chatResponse) => <Chat chats={chatResponse.data} />}
+            </Await>
+          </Suspense>
         </div>
       </div>
     </div>

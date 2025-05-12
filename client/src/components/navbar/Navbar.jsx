@@ -7,6 +7,8 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
 
+  const currentUser = user.userInfo;
+
   return (
     <nav>
       <div className="left">
@@ -20,10 +22,10 @@ function Navbar() {
         <Link to="/">Agents</Link>
       </div>
       <div className="right">
-        {user ? (
+        {currentUser ? (
           <div className="user">
-            <img src={user?.avatar || "noavatar.jpg"} alt="" />
-            <span>{user?.username}</span>
+            <img src={currentUser?.avatar || "noavatar.jpg"} alt="" />
+            <span>{currentUser?.username}</span>
             <Link to="/profile" className="profile">
               <div className="notification">3</div>
               <span>Profile</span>

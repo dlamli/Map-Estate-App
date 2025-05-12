@@ -1,119 +1,93 @@
 import { useState } from "react";
+import { format } from "timeago.js";
+import { useForm } from "react-hook-form";
+
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { API_URL } from "../../services/api";
+
 import "./chat.scss";
 
-function Chat() {
-  const [chat, setChat] = useState(true);
+function Chat({ chats }) {
+  const [chat, setChat] = useState(null);
+  const { user } = useAuthContext();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const currentUser = user.userInfo;
+
+  const handleOpenChat = async (id, receiver) => {
+    try {
+      const res = await API_URL.get(`/chats/${id}`);
+      setChat({ ...res.data, receiver });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSubmit = async ({ text }) => {
+    try {
+      const res = await API_URL.post(`/messages/${chat.id}`, { text });
+      setChat((chat) => ({ ...chat, messages: [...chat.messages, res.data] }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="chat">
       <div className="messages">
         <h1>Messages</h1>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
-        <div className="message">
-          <img
-            src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-          />
-          <span>John Doe</span>
-          <p>Lorem ipsum dolor sit amet...</p>
-        </div>
+        {chats?.map((chat) => (
+          <div
+            className="message"
+            key={chat.id}
+            style={{
+              backgroundColor: chat.seenBy.includes(currentUser.id)
+                ? "white"
+                : "#fecd514e",
+            }}
+            onClick={() => handleOpenChat(chat.id, chat.receiver)}
+          >
+            <img src={chat.avatar || "noavatar.jpg"} alt="" />
+            <span>{chat.receiver.username}</span>
+            <p>{chat.lastMessage}</p>
+          </div>
+        ))}
       </div>
       {chat && (
         <div className="chatBox">
           <div className="top">
             <div className="user">
-              <img
-                src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt=""
-              />
-              John Doe
+              <img src={chat.receiver.avatar || "noavatar.jpg"} alt="" />
+              {chat.receiver.username}
             </div>
-            <span className="close" onClick={()=>setChat(null)}>X</span>
+            <span className="close" onClick={() => setChat(null)}>
+              X
+            </span>
           </div>
           <div className="center">
-            <div className="chatMessage">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage own">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage own">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage own">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage own">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
-            <div className="chatMessage own">
-              <p>Lorem ipsum dolor sit amet</p>
-              <span>1 hour ago</span>
-            </div>
+            {chat.messages.map((m) => (
+              <div
+                key={m.id}
+                className="chatMessage"
+                style={{
+                  alignSelf:
+                    m.userId === currentUser.id ? "flex-end" : "flex-start",
+                  textAlign: m.userId === currentUser.id ? "right" : "left",
+                }}
+              >
+                <p>{m.text}</p>
+                <span>{format(m.createdAt)}</span>
+              </div>
+            ))}
           </div>
-          <div className="bottom">
-            <textarea></textarea>
+          <form onSubmit={handleSubmit(onSubmit)} className="bottom">
+            <textarea name="text" {...register("text")}></textarea>
             <button>Send</button>
-          </div>
+          </form>
         </div>
       )}
     </div>
