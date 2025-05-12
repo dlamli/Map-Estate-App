@@ -4,9 +4,9 @@ import { useAuthContext } from "../../hooks/useAuthContext";
 
 function RequireAuthLayout() {
   const { user } = useAuthContext();
-  
+
   const currentUser = user.userInfo;
-  return !currentUser ? (
+  return !currentUser || !user ? (
     <Navigate to="/login" />
   ) : (
     <div className="layout">

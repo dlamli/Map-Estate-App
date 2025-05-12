@@ -7,7 +7,7 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
 
-  const currentUser = user.userInfo;
+  const currentUser = user?.userInfo;
 
   return (
     <nav>

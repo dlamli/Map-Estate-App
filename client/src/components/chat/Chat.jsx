@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "timeago.js";
 import { useForm } from "react-hook-form";
 
@@ -27,10 +27,11 @@ function Chat({ chats }) {
     }
   };
 
-  const onSubmit = async ({ text }) => {
+  const onSubmit = async ({ text }, { target }) => {
     try {
       const res = await API_URL.post(`/messages/${chat.id}`, { text });
       setChat((chat) => ({ ...chat, messages: [...chat.messages, res.data] }));
+      target.reset();
     } catch (error) {
       console.log(error);
     }

@@ -1,10 +1,12 @@
+import { Suspense } from "react";
 import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
+
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import { API_URL } from "../../services/api";
-import "./profilePage.scss";
 import { useAuthContext } from "../../hooks/useAuthContext";
-import { Suspense } from "react";
+
+import "./profilePage.scss";
 
 function ProfilePage() {
   const data = useLoaderData();
