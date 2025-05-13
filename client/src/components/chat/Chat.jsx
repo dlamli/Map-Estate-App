@@ -7,6 +7,7 @@ import { useSocketContext } from "../../hooks/useSocketContext";
 import { API_URL } from "../../services/api";
 
 import "./chat.scss";
+import { useNotificationStore } from "../../store/notificationStore";
 
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
@@ -14,6 +15,7 @@ function Chat({ chats }) {
   const { register, handleSubmit } = useForm();
   const { socket } = useSocketContext();
   const messageEndRef = useRef(null);
+  const decrease = useNotificationStore((state) => state.decrease);
 
   const currentUser = user.userInfo;
 
@@ -44,6 +46,11 @@ function Chat({ chats }) {
   const handleOpenChat = async (id, receiver) => {
     try {
       const res = await API_URL.get(`/chats/${id}`);
+
+      if (!res.data.seenBy.includes(currentUser.id)) {
+        decrease();
+      }
+
       setChat({ ...res.data, receiver });
     } catch (error) {
       console.log(error);

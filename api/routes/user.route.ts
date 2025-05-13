@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteUserById, getUserById, getUsers, profilePosts, savePost, updateUserById } from "../controllers/user.controller.ts";
+import { deleteUserById, getNotificationNumber, getUserById, getUsers, profilePosts, savePost, updateUserById } from "../controllers/user.controller.ts";
 import { verifyToken } from "../middlewares/verify-token.ts";
 
 
@@ -11,5 +11,6 @@ router.post("/save", verifyToken, savePost);
 router.put("/:id", verifyToken, updateUserById);
 router.delete("/:id", verifyToken, deleteUserById);
 router.get("/profilePosts", verifyToken, profilePosts);
+router.get("/notification", verifyToken, getNotificationNumber);
 
 export default router;

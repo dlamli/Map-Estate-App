@@ -8,7 +8,7 @@ export const SocketContextProvider = ({ children }) => {
   const { user } = useAuthContext();
   const [socket, setSocket] = useState(null);
 
-  const currentUser = user.userInfo;
+  const currentUser = user?.userInfo;
 
   useEffect(() => {
     setSocket(io("http://localhost:4000"));

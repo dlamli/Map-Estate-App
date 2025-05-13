@@ -16,6 +16,33 @@ export const getUsers = async (req: Request, res: Response) => {
     )
   }
 }
+
+export const getNotificationNumber = async (req: Request, res: Response) => {
+  const tokenUserId = req.userId;
+
+  try {
+    const notificationNumber = await prisma.chat.count({
+      where: {
+        userIDs: {
+          has: tokenUserId,
+        },
+        NOT: {
+          seenBy: {
+            hasSome: [tokenUserId],
+          }
+        }
+      }
+    });
+
+    res.status(200).json(notificationNumber);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error getting notification number"
+    })
+  }
+}
+
 export const getUserById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
