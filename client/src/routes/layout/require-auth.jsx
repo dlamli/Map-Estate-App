@@ -6,7 +6,7 @@ function RequireAuthLayout() {
   const { user } = useAuthContext();
 
   const currentUser = user.userInfo;
-  return !currentUser || !user ? (
+  return !currentUser ? (
     <Navigate to="/login" />
   ) : (
     <div className="layout">
